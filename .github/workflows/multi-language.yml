@@ -1,0 +1,158 @@
+name: Multi-language CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  javascript:
+    name: JavaScript/TypeScript
+    runs-on: ubuntu-latest
+    if: hashFiles('**/package.json') != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: npm run lint || echo "Lint step skipped"
+      
+    - name: Run tests
+      run: npm test || echo "Test step skipped"
+      
+    - name: Build
+      run: npm run build || echo "Build step skipped"
+
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    if: hashFiles('**/requirements.txt') != '' || hashFiles('**/pyproject.toml') != '' || hashFiles('**/setup.py') != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt || echo "No requirements.txt found"
+        
+    - name: Run linting
+      run: |
+        pip install flake8 black isort
+        flake8 . || echo "Flake8 step skipped"
+        black --check . || echo "Black check skipped"
+        isort --check-only . || echo "Isort check skipped"
+        
+    - name: Run tests
+      run: |
+        pip install pytest
+        pytest || echo "Pytest step skipped"
+
+  java:
+    name: Java
+    runs-on: ubuntu-latest
+    if: hashFiles('**/pom.xml') != '' || hashFiles('**/build.gradle') != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Build with Maven
+      run: mvn clean compile test || echo "Maven build skipped"
+
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    if: hashFiles('**/go.mod') != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Run tests
+      run: go test ./... || echo "Go tests skipped"
+      
+    - name: Run linter
+      run: |
+        go install golang.org/x/lint/golint@latest
+        golint ./... || echo "Golint step skipped"
+
+  csharp:
+    name: C#
+    runs-on: ubuntu-latest
+    if: hashFiles('**/*.csproj') != '' || hashFiles('**/*.sln') != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

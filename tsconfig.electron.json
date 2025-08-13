@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "module": "ESNext",
+    "target": "ES2017",
+    "outDir": "dist_electron",
+    "rootDir": "."
+  },
+  "include": ["electron-main.ts"]
+}

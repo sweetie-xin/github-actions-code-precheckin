@@ -1,0 +1,207 @@
+{
+  "name": "DeepSeekMine",
+  "version": "2.0",
+  "description": "DeepSeekMine个人知识库",
+  "author": "Zhen Guo Team guozhennianhua@163.com",
+  "main": "dist_electron/electron-main.cjs",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:next\" \"npm run dev:electron\"",
+    "dev:next": "npx next dev -p 3335",
+    "dev:electron": "wait-on http://127.0.0.1:3335 && cross-env NODE_ENV=development electron dist_electron/electron-main.cjs",
+    "build": "next build",
+    "start": "next start",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:linux:x64": "electron-builder --linux --x64",
+    "dist:linux:arm64": "electron-builder --linux --arm64",
+    "clean": "rm -rf .next dist .turbo .next/cache && npm run clean:build ",
+    "clean:build": "rm -rf node_modules package-lock.json"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/dotenv": "^6.1.1",
+    "@types/formidable": "^3.4.5",
+    "@types/node": "^20.17.19",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^25.9.8",
+    "electron-builder": "^23.6.0",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "axios": "^1.8.4",
+    "form-data": "^4.0.2",
+    "formidable": "^3.5.2",
+    "lucide-react": "^0.477.0",
+    "meilisearch": "^0.51.0",
+    "mysql2": "^3.12.0",
+    "next": "^15.2.0",
+    "nodejieba": "^3.4.4",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-markdown": "^10.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.1.0",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "build": {
+    "appId": "com.deepseekmine",
+    "productName": "DeepSeekMine-light",
+    "icon": "public/logo.png",
+    "directories": {
+      "output": "dist"
+    },
+    "asar": true,
+    "asarUnpack": [],
+    "files": [
+      "dist_electron/**/*",
+      "public/**/*",
+      "next.config.js",
+      "package.json",
+      "semantic_rag/**/*",
+      "!**/*.pdb",
+      "!**/*.dll"
+    ],
+    "extraResources": [
+      {
+        "from": ".next",
+        "to": "app/.next"
+      },
+      {
+        "from": "test",
+        "to": "app/test"
+      },
+      {
+        "from": "public",
+        "to": "app/public"
+      },
+      {
+        "from": "node-mac",
+        "to": "app/node-mac"
+      },
+      {
+        "from": "semantic_rag",
+        "to": "app/semantic_rag"
+      },
+      {
+        "from": "node_modules/next",
+        "to": "app/node_modules/next"
+      },
+      {
+        "from": "node_modules/react",
+        "to": "app/node_modules/react"
+      },
+      {
+        "from": "node_modules/react-dom",
+        "to": "app/node_modules/react-dom"
+      },
+      {
+        "from": "node_modules/@next",
+        "to": "app/node_modules/@next"
+      },
+      {
+        "from": "node_modules/@swc",
+        "to": "app/node_modules/@swc"
+      },
+      {
+        "from": "node_modules/postcss",
+        "to": "app/node_modules/postcss"
+      },
+      {
+        "from": "node_modules/styled-jsx",
+        "to": "app/node_modules/styled-jsx"
+      },
+      {
+        "from": "node_modules/axios",
+        "to": "app/node_modules/axios"
+      },
+      {
+        "from": "node_modules/winston",
+        "to": "app/node_modules/winston"
+      },
+      {
+        "from": "node_modules/formidable",
+        "to": "app/node_modules/formidable"
+      },
+      {
+        "from": "node_modules/lucide-react",
+        "to": "app/node_modules/lucide-react"
+      },
+      {
+        "from": "node_modules/tailwindcss",
+        "to": "app/node_modules/tailwindcss"
+      },
+      {
+        "from": "node_modules/remark-gfm",
+        "to": "app/node_modules/remark-gfm"
+      },
+      {
+        "from": "node_modules/shiki",
+        "to": "app/node_modules/shiki"
+      },
+      {
+        "from": "node_modules/react-markdown",
+        "to": "app/node_modules/react-markdown"
+      },
+      {
+        "from": "node_modules/react-syntax-highlighter",
+        "to": "app/node_modules/react-syntax-highlighter"
+      },
+      {
+        "from": "external/python_env",
+        "to": "app/semantic_rag/python_env"
+      },
+      {
+        "from": "semantic_rag/main.py",
+        "to": "app/semantic_rag/main.py"
+      }
+    ],
+    "mac": {
+      "target": "dmg",
+      "artifactName": "DeepSeekMine-${version}-${arch}.${ext}"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "DeepSeekMine-${version}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "DeepSeekMine-${version}-${arch}.${ext}",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

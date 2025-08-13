@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Debug Next.js (port 3335)",
+      "request": "launch",
+      "command": "PORT=3335 npm run dev",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

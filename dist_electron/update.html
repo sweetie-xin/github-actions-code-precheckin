@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>下载更新中...</title>
+</head>
+<body>
+  <h3>正在下载更新，请稍候...</h3>
+  <progress id="bar" max="100" value="0"></progress>
+  <p id="text">初始化中...</p>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    ipcRenderer.on('update-progress', (_, data) => {
+      document.getElementById('bar').value = data.percent;
+      document.getElementById('text').innerText =
+        `已下载 ${data.transferred}MB / ${data.total}MB（${data.percent}%）`;
+    });
+  </script>
+</body>
+</html>

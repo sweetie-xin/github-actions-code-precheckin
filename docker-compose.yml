@@ -1,0 +1,32 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: qaz0913cde350odxs
+      MEILI_MAX_TOTAL_HITS: 5000000
+    # volumes:
+    #   - /c/deepseekmine/meili_data:/meili_data  # Windows 路径写法
+    ports:
+      - "7700:7700"
+    # volumes:
+    #   - "C:/deepseekmine/meili_data:/meili_data"
+    volumes:
+      - "${HOME}/meili_data:/meili_data"
+
+  deepseekmine:
+    image: deepseekmine:0.7.1
+    container_name: deepseekmine
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "5001:5001"
+    depends_on:
+      - meilisearch
+    environment:
+      NEXT_PUBLIC_LLM_API_URL: http://host.docker.internal:11434/api/chat
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:5001
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_API_KEY: qaz0913cde350odxs
+      USE_EXTERNAL_MEILISEARCH: true

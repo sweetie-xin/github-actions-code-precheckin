@@ -1,0 +1,91 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+notebooks.json
+# testing
+/coverage
+/data.ms/auth/data.mdb
+/data.ms/auth/lock.mdb
+/data.ms/tasks/data.mdb
+/data.ms/tasks/lock.mdb
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+/logs
+/meilisearch
+/uploads
+dist/
+dist-win-output/
+electron-output/
+electron-dist/
+electron-ouput-installers/
+data/
+node-mac/
+thulac_env_mac/
+semantic_rag/meilisearch
+semantic_rag/meilisearch-linux-amd64
+semantic_rag/meilisearch-windows-amd64.exe
+semantic_rag/.idea/
+semantic_rag/__pycache__/
+semantic_rag/logs/
+semantic_rag/uploads/
+semantic_rag/models
+semantic-rag/meilisearch
+semantic-rag/meilisearch-linux-amd64
+semantic-rag/meilisearch-windows-amd64.exe
+semantic-rag/.idea/
+semantic-rag/__pycache__/
+semantic-rag/logs/
+semantic-rag/uploads/
+external/
+package-lock.json
+package-copy.json
+rag_mac_fastapi
+rag_windows_fastapi
+node-windows
+node-mac
+**/__pycache__
+**/.idea
+semantic_rag/python_env/
+**/*.tar
+deepseekmine-install/
+deepseekmine-install.tar.gz
+deepseekmine-install-.tar.gz
+semantic-rag/python_env/
+invite.json
+config.json
+login.json
+*.mdb
+data.ms/
+*.zip
