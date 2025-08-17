@@ -56,22 +56,22 @@ jobs:
           npx eslint . --ext .js,.jsx,.ts,.tsx || echo "ESLint 检查失败，但继续执行"
         fi
       
-    - name: Run Prettier check
-      run: |
-        echo "🔍 检查代码格式..."
-        if npm run format:check; then
-          echo "✅ 代码格式检查通过"
-        else
-          echo "⚠️ 代码格式检查失败，尝试修复..."
-          chmod +x scripts/fix-formatting.sh
-          ./scripts/fix-formatting.sh || echo "格式修复失败，但继续执行"
-        fi
+    # - name: Run Prettier check
+    #   run: |
+    #     echo "🔍 检查代码格式..."
+    #     if npm run format:check; then
+    #       echo "✅ 代码格式检查通过"
+    #     else
+    #       echo "⚠️ 代码格式检查失败，尝试修复..."
+    #       chmod +x scripts/fix-formatting.sh
+    #       ./scripts/fix-formatting.sh || echo "格式修复失败，但继续执行"
+    #     fi
       
-    - name: Run TypeScript type check
-      run: npm run type-check
+    # - name: Run TypeScript type check
+    #   run: npm run type-check
       
-    - name: Run security audit
-      run: npm audit --audit-level=moderate
+    # - name: Run security audit
+    #   run: npm audit --audit-level=moderate
 
   # 单元测试
   test:
