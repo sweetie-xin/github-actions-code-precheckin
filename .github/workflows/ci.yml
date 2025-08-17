@@ -42,13 +42,8 @@ jobs:
         
     - name: Install dependencies
       run: |
-        # 尝试使用 npm ci
-        if npm ci; then
-          echo "Dependencies installed successfully with npm ci"
-        else
-          echo "npm ci failed, falling back to npm install"
-          npm install
-        fi
+        chmod +x scripts/install-deps.sh
+        ./scripts/install-deps.sh
       
     - name: Run ESLint
       run: npm run lint
@@ -102,8 +97,13 @@ jobs:
         if npm ci; then
           echo "Dependencies installed successfully with npm ci"
         else
-          echo "npm ci failed, falling back to npm install"
-          npm install
+          echo "npm ci failed, trying npm install with legacy peer deps..."
+          if npm install --legacy-peer-deps; then
+            echo "Dependencies installed successfully with --legacy-peer-deps"
+          else
+            echo "Legacy install failed, trying with --force..."
+            npm install --force
+          fi
         fi
       
     - name: Run unit tests
