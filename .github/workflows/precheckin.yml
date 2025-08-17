@@ -23,12 +23,21 @@ jobs:
         
     - name: Generate package-lock.json if not exists
       run: |
+        echo "Current directory: $(pwd)"
+        echo "Files in current directory:"
+        ls -la
+        
         if [ ! -f package-lock.json ]; then
           echo "package-lock.json not found, generating..."
           npm install --package-lock-only
+          echo "Generated package-lock.json:"
+          ls -la package-lock.json || echo "Failed to generate package-lock.json"
         else
           echo "package-lock.json already exists"
         fi
+        
+        echo "Final check - package-lock.json exists:"
+        ls -la package-lock.json || echo "package-lock.json still missing!"
         
     - name: Install dependencies
       run: npm ci
