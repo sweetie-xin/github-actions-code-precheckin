@@ -69,7 +69,7 @@ semantic-rag/__pycache__/
 semantic-rag/logs/
 semantic-rag/uploads/
 external/
-package-lock.json
+# package-lock.json  # 注释掉，允许提交到版本控制
 package-copy.json
 rag_mac_fastapi
 rag_windows_fastapi

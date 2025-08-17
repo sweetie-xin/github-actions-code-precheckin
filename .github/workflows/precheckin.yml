@@ -40,7 +40,14 @@ jobs:
         ls -la package-lock.json || echo "package-lock.json still missing!"
         
     - name: Install dependencies
-      run: npm ci
+      run: |
+        # 尝试使用 npm ci
+        if npm ci; then
+          echo "Dependencies installed successfully with npm ci"
+        else
+          echo "npm ci failed, falling back to npm install"
+          npm install
+        fi
       
     - name: Check code formatting
       run: npm run format:check
