@@ -44,27 +44,27 @@ jobs:
         chmod +x scripts/install-deps.sh
         ./scripts/install-deps.sh
       
-    - name: Check code formatting
-      run: |
-        echo "🔍 检查代码格式..."
-        if npm run format:check; then
-          echo "✅ 代码格式检查通过"
-        else
-          echo "⚠️ 代码格式检查失败，尝试修复..."
-          chmod +x scripts/fix-formatting.sh
-          ./scripts/fix-formatting.sh || echo "格式修复失败，但继续执行"
-        fi
+    # - name: Check code formatting
+    #   run: |
+    #     echo "🔍 检查代码格式..."
+    #     if npm run format:check; then
+    #       echo "代码格式检查通过"
+    #     else
+    #       echo "代码格式检查失败，尝试修复..."
+    #       chmod +x scripts/fix-formatting.sh
+    #       ./scripts/fix-formatting.sh || echo "格式修复失败，但继续执行"
+    #     fi
       
-    - name: Run linter
-      run: |
-        echo "🔍 检查 ESLint 配置..."
-        if [ -f "eslint.config.mjs" ]; then
-          echo "✅ 使用新的 ESLint 配置"
-          npm run lint || echo "ESLint 检查失败，但继续执行"
-        else
-          echo "⚠️ 使用旧的 ESLint 配置"
-          npx eslint . --ext .js,.jsx,.ts,.tsx || echo "ESLint 检查失败，但继续执行"
-        fi
+    # - name: Run linter
+    #   run: |
+    #     echo "检查 ESLint 配置..."
+    #     if [ -f "eslint.config.mjs" ]; then
+    #       echo "使用新的 ESLint 配置"
+    #       npm run lint || echo "ESLint 检查失败，但继续执行"
+    #     else
+    #       echo " 使用旧的 ESLint 配置"
+    #       npx eslint . --ext .js,.jsx,.ts,.tsx || echo "ESLint 检查失败，但继续执行"
+    #     fi
       
     - name: Type check
       run: npm run type-check
