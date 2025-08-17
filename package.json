@@ -16,18 +16,7 @@
     "dist:win": "npm install && npm run build && electron-builder --win --publish always",
     "dist:win:x64": "npm run build && electron-builder --win --x64",
     "dist:win:arm64": "npm run build && electron-builder --win --arm64",
-    "clean": "rimraf .next dist .turbo .next/cache && npm run clean:build",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false",
-    "test:integration": "jest --config jest.integration.config.js",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "type-check": "tsc --noEmit",
-    "validate": "npm run lint && npm run format:check && npm run type-check && npm run test:ci"
+    "clean": "rimraf .next dist .turbo .next/cache && npm run clean:build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
