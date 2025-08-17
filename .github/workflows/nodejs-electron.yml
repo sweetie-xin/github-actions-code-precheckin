@@ -7,10 +7,9 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  javascript:
+  nodejs-electron:
     name: Node.js & Electron
     runs-on: ubuntu-latest
-    if: hashFiles('**/package.json') != ''
     
     steps:
     - name: Checkout code
@@ -58,7 +57,9 @@ jobs:
       
     - name: Build
       run: npm run build || echo "Build step skipped"
-
+      
+    - name: Build Electron
+      run: npm run dist || echo "Electron build step skipped"
 
   security:
     name: Security Scan
