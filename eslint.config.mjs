@@ -56,6 +56,27 @@ const eslintConfig = [
       // 允许使用 any 类型（在迁移期间）
       "@typescript-eslint/no-explicit-any": "warn"
     }
+  },
+  // Jest 测试文件环境
+  {
+    files: [
+      "**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "**/*.{test,spec}.{js,jsx,ts,tsx}",
+    ],
+    languageOptions: {
+      globals: {
+        // Jest 全局只读
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        jest: "readonly",
+      }
+    }
   }
 ];
 

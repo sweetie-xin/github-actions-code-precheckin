@@ -5,7 +5,7 @@ const createJestConfig = nextJest({
 })
 
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
@@ -13,11 +13,27 @@ const customJestConfig = {
     '<rootDir>/dist/',
     '<rootDir>/dist_electron/',
   ],
-  testMatch: [
-    '<rootDir>/**/__tests__/**/*.integration.{js,jsx,ts,tsx}',
-    '<rootDir>/**/*.integration.{test,spec}.{js,jsx,ts,tsx}',
+  collectCoverageFrom: [
+    'app/**/*.{js,jsx,ts,tsx}',
+    'components/**/*.{js,jsx,ts,tsx}',
+    'lib/**/*.{js,jsx,ts,tsx}',
+    'utils/**/*.{js,jsx,ts,tsx}',
+    '!**/*.d.ts',
+    '!**/*.config.{js,ts}',
+    '!**/node_modules/**',
+    '!**/.next/**',
+    '!**/dist/**',
+    '!**/dist_electron/**',
   ],
-  moduleNameMapping: {
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/app/(.*)$': '<rootDir>/app/$1',
@@ -31,13 +47,17 @@ const customJestConfig = {
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  testMatch: [
+    '<rootDir>/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/**/*(*.)+(test|spec).{js,jsx,ts,tsx}',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testTimeout: 30000, // Longer timeout for integration tests
+  testTimeout: 10000,
   verbose: true,
   clearMocks: true,
   restoreMocks: true,
-  // Don't collect coverage for integration tests
-  collectCoverage: false,
 }
 
 module.exports = createJestConfig(customJestConfig)
+
+

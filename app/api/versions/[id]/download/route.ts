@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+
+export const runtime = 'nodejs'
 import fs from 'fs';
 import path from 'path';
 
-export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
     try {
-        const versionId = params.id;
+        const url = new URL(request.url)
+        const segments = url.pathname.split('/')
+        const versionId = segments[segments.indexOf('versions') + 1]
         const versionsFile = path.join(process.cwd(), 'data', 'versions.json');
 
         if (!fs.existsSync(versionsFile)) {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+// Using Jest globals
 
 // Mock file upload service
 interface FileUploadService {

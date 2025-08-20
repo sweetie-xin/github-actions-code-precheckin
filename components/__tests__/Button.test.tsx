@@ -1,6 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, jest } from '@jest/globals'
+import * as RTL from '@testing-library/react'
+const { render, screen, fireEvent } = RTL
 
 // Mock Button component
 interface ButtonProps {
