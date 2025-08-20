@@ -9,7 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-notebooks.json
+# notebooks.json
 # testing
 /coverage
 /data.ms/auth/data.mdb
@@ -73,8 +73,8 @@ external/
 package-copy.json
 rag_mac_fastapi
 rag_windows_fastapi
-node-windows
-node-mac
+# node-windows
+# node-mac
 **/__pycache__
 **/.idea
 semantic_rag/python_env/

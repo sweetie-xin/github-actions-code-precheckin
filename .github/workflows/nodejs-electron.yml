@@ -9,7 +9,7 @@ on:
 jobs:
   nodejs-electron:
     name: Node.js & Electron
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     
     steps:
     - name: Checkout code
@@ -48,10 +48,10 @@ jobs:
       run: |
         echo "🔍 检查 ESLint 配置..."
         if [ -f "eslint.config.mjs" ]; then
-          echo "✅ 使用新的 ESLint 配置"
+          echo "使用新的 ESLint 配置"
           npm run lint || echo "ESLint 检查失败，但继续执行"
         else
-          echo "⚠️ 使用旧的 ESLint 配置"
+          echo "使用旧的 ESLint 配置"
           npx eslint . --ext .js,.jsx,.ts,.tsx || echo "ESLint 检查失败，但继续执行"
         fi
       
@@ -66,7 +66,7 @@ jobs:
 
   security:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     
     steps:
     - name: Checkout code

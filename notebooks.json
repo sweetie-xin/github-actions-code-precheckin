@@ -1,0 +1,106 @@
+[
+    {
+        "id": 8,
+        "title": "知识库8",
+        "date": "2025/8/5 14:15:51",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 7,
+        "title": "知识库7",
+        "date": "2025/8/5 14:15:50",
+        "creator": "luxin_test_0705",
+        "sources": 2,
+        "icon": "📘",
+        "bgColor": "bg-gray-100",
+        "files": [
+            {
+                "name": "测试.docx.docx",
+                "type": "docx"
+            },
+            {
+                "name": "测试.docx",
+                "type": "docx"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "title": "知识库6",
+        "date": "2025/8/5 14:15:49",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 5,
+        "title": "知识库5",
+        "date": "2025/8/5 14:15:48",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 4,
+        "title": "知识库4",
+        "date": "2025/8/5 14:15:47",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 3,
+        "title": "知识库3",
+        "date": "2025/8/5 14:15:47",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 2,
+        "title": "知识库2",
+        "date": "2025/8/5 14:15:46",
+        "creator": "luxin_test_0705",
+        "sources": 0,
+        "icon": "📘",
+        "bgColor": "bg-gray-100"
+    },
+    {
+        "id": 1,
+        "title": "知识库1",
+        "date": "2025/8/5 14:15:44",
+        "creator": "luxin_test_0705",
+        "sources": 5,
+        "icon": "📘",
+        "bgColor": "bg-gray-100",
+        "files": [
+            {
+                "name": "Allegis Group - Testing Engineer-LuXin.docx",
+                "type": "docx"
+            },
+            {
+                "name": "101 Formulaic Alphas(1).pdf",
+                "type": "pdf"
+            },
+            {
+                "name": "selfintroduction.docx",
+                "type": "docx"
+            },
+            {
+                "name": "测试.docx.docx",
+                "type": "docx"
+            },
+            {
+                "name": "测试.docx",
+                "type": "docx"
+            }
+        ]
+    }
+]
