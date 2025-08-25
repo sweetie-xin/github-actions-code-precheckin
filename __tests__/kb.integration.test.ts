@@ -281,6 +281,244 @@ describe('Knowledge Base creation and attachments', () => {
       }
     }
   })
+
+  it('complete workflow: creates KB, uploads files, then deletes KB', async () => {
+    // Step 1: Create a new knowledge base
+    const { POST: createKB } = require('@/app/api/kb/route')
+    
+    const kbPayload = {
+      title: '测试知识库',
+      date: '2025-01-01 10:00:00',
+      creator: 'tester',
+      icon: '📚',
+      bgColor: 'bg-blue-100',
+    }
+
+    const createReq: any = { json: async () => kbPayload }
+    const createRes: any = await createKB(createReq)
+    const createdKB = await createRes.json()
+
+    expect(createdKB).toMatchObject({
+      id: expect.any(Number),
+      title: kbPayload.title,
+      sources: 0,
+      creator: kbPayload.creator,
+      icon: kbPayload.icon,
+      bgColor: kbPayload.bgColor,
+    })
+
+    const kbId = createdKB.id
+    expect(memoryNotebooks).toHaveLength(1)
+    expect(memoryNotebooks[0].id).toBe(kbId)
+
+    // Verify Meili index was created
+    const { createMeiliIndex } = require('@/app/server-lib/meili.setup')
+    expect(createMeiliIndex).toHaveBeenCalledWith(`kb_${kbId}`)
+
+    // Step 2: Upload multiple files to the knowledge base
+    const { POST: uploadFiles } = require('@/app/api/files/upload/route')
+    
+    // Create mock files of different types and sizes
+    const mockFiles = [
+      {
+        name: 'document.pdf',
+        size: 2 * 1024 * 1024, // 2MB
+        type: 'application/pdf',
+        arrayBuffer: async () => new ArrayBuffer(2 * 1024 * 1024),
+      },
+      {
+        name: 'presentation.pptx',
+        size: 5 * 1024 * 1024, // 5MB
+        type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        arrayBuffer: async () => new ArrayBuffer(5 * 1024 * 1024),
+      },
+      {
+        name: 'spreadsheet.xlsx',
+        size: 1 * 1024 * 1024, // 1MB
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        arrayBuffer: async () => new ArrayBuffer(1 * 1024 * 1024),
+      },
+      {
+        name: 'text.txt',
+        size: 0.1 * 1024 * 1024, // 100KB
+        type: 'text/plain',
+        arrayBuffer: async () => new ArrayBuffer(0.1 * 1024 * 1024),
+      },
+    ]
+
+    const formDataMock = {
+      getAll: (key: string) => (key === 'file' ? mockFiles : []),
+      get: (key: string) => (key === 'knowledgeLabel' ? String(kbId) : null),
+    }
+
+    const uploadReq: any = { formData: async () => formDataMock }
+    const uploadRes: any = await uploadFiles(uploadReq)
+    
+    expect(uploadRes.status).toBe(200)
+    const uploadBody = await uploadRes.json()
+    expect(uploadBody).toHaveProperty('files')
+    expect(Array.isArray(uploadBody.files)).toBe(true)
+
+    // Step 3: Add file metadata to the knowledge base
+    const { POST: addFileMeta } = require('@/app/api/kb/[id]/route')
+    
+    for (const file of mockFiles) {
+      const fileMetaReq: any = {
+        url: `http://localhost/api/kb/${kbId}`,
+        json: async () => ({ 
+          fileMeta: { 
+            name: file.name, 
+            type: file.type.split('/').pop() || file.type 
+          } 
+        }),
+      }
+      const fileMetaRes: any = await addFileMeta(fileMetaReq)
+      expect(fileMetaRes.status).toBe(200)
+      const fileMetaBody = await fileMetaRes.json()
+      expect(fileMetaBody).toEqual({ success: true })
+    }
+
+    // Verify files were added to the knowledge base
+    expect(memoryNotebooks[0].files).toHaveLength(mockFiles.length)
+    expect(memoryNotebooks[0].sources).toBe(mockFiles.length)
+    expect(memoryNotebooks[0].files).toEqual(
+      expect.arrayContaining([
+        { name: 'document.pdf', type: 'pdf' },
+        { name: 'presentation.pptx', type: 'pptx' },
+        { name: 'spreadsheet.xlsx', type: 'xlsx' },
+        { name: 'text.txt', type: 'txt' },
+      ])
+    )
+
+    // Step 4: Verify Meili index has documents (simulated)
+    const { meiliClient } = require('@/app/server-lib/meili.setup')
+    expect(meiliClient.getIndex).toHaveBeenCalledWith(`kb_${kbId}`)
+
+    // Step 5: Delete the entire knowledge base
+    const { DELETE: deleteKB } = require('@/app/api/kb/route')
+    
+    const deleteReq: any = { json: async () => ({ id: kbId }) }
+    const deleteRes: any = await deleteKB(deleteReq)
+    
+    expect(deleteRes.status).toBe(200)
+    const deleteBody = await deleteRes.json()
+    expect(deleteBody).toEqual({ success: true })
+
+    // Verify knowledge base was removed from memory
+    expect(memoryNotebooks).toHaveLength(0)
+
+    // Verify Meili index was deleted
+    const { deleteMeiliIndex } = require('@/app/server-lib/meili.setup')
+    expect(deleteMeiliIndex).toHaveBeenCalledWith(`kb_${kbId}`)
+
+    // Step 6: Verify that attempting to access the deleted KB returns 404
+    const getFilesReq: any = {
+      nextUrl: {
+        searchParams: {
+          get: (key: string) => key === 'notebookId' ? String(kbId) : null
+        }
+      }
+    }
+    
+    const { GET: getFiles } = require('@/app/api/kb/[id]/route')
+    const getFilesRes: any = await getFiles(getFilesReq)
+    expect(getFilesRes.status).toBe(404)
+    const getFilesBody = await getFilesRes.json()
+    expect(getFilesBody).toHaveProperty('error')
+    expect(getFilesBody.error).toBe('知识库不存在')
+
+    // Step 7: Verify that attempting to add files to deleted KB returns 404
+    const addFileToDeletedReq: any = {
+      url: `http://localhost/api/kb/${kbId}`,
+      json: async () => ({ 
+        fileMeta: { name: 'newfile.pdf', type: 'pdf' } 
+      }),
+    }
+    
+    const addFileToDeletedRes: any = await addFileMeta(addFileToDeletedReq)
+    expect(addFileToDeletedRes.status).toBe(404)
+    const addFileToDeletedBody = await addFileToDeletedRes.json()
+    expect(addFileToDeletedBody).toHaveProperty('error')
+    expect(addFileToDeletedBody.error).toBe('知识库不存在')
+  })
+
+  it('stress: creates multiple KBs with files, then deletes them all', async () => {
+    const { POST: createKB } = require('@/app/api/kb/route')
+    const { POST: uploadFiles } = require('@/app/api/kb/[id]/route')
+    const { DELETE: deleteKB } = require('@/app/api/kb/route')
+    
+    const kbCount = 10
+    const kbIds: number[] = []
+    
+    // Create multiple knowledge bases
+    for (let i = 0; i < kbCount; i++) {
+      const kbPayload = {
+        title: `压力测试知识库_${i + 1}`,
+        date: '2025-01-01 10:00:00',
+        creator: 'tester',
+        icon: '📖',
+        bgColor: 'bg-green-100',
+      }
+      
+      const createReq: any = { json: async () => kbPayload }
+      const createRes: any = await createKB(createReq)
+      const createdKB = await createRes.json()
+      
+      expect(createdKB.id).toBe(i + 1)
+      kbIds.push(createdKB.id)
+    }
+    
+    expect(memoryNotebooks).toHaveLength(kbCount)
+    
+    // Add files to each knowledge base
+    for (const kbId of kbIds) {
+      const mockFiles = [
+        { name: `file1_${kbId}.pdf`, type: 'pdf' },
+        { name: `file2_${kbId}.txt`, type: 'txt' },
+        { name: `file3_${kbId}.docx`, type: 'docx' },
+      ]
+      
+      for (const file of mockFiles) {
+        const fileMetaReq: any = {
+          url: `http://localhost/api/kb/${kbId}`,
+          json: async () => ({ fileMeta: file }),
+        }
+        const fileMetaRes: any = await addFileMeta(fileMetaReq)
+        expect(fileMetaRes.status).toBe(200)
+      }
+    }
+    
+    // Verify all files were added
+    for (let i = 0; i < kbCount; i++) {
+      expect(memoryNotebooks[i].files).toHaveLength(3)
+      expect(memoryNotebooks[i].sources).toBe(3)
+    }
+    
+    // Delete all knowledge bases in reverse order
+    for (let i = kbIds.length - 1; i >= 0; i--) {
+      const kbId = kbIds[i]
+      const deleteReq: any = { json: async () => ({ id: kbId }) }
+      const deleteRes: any = await deleteKB(deleteReq)
+      
+      expect(deleteRes.status).toBe(200)
+      const deleteBody = await deleteRes.json()
+      expect(deleteBody).toEqual({ success: true })
+    }
+    
+    // Verify all knowledge bases were deleted
+    expect(memoryNotebooks).toHaveLength(0)
+    
+    // Verify Meili indexes were created and deleted
+    const { createMeiliIndex, deleteMeiliIndex } = require('@/app/server-lib/meili.setup')
+    expect(createMeiliIndex).toHaveBeenCalledTimes(kbCount)
+    expect(deleteMeiliIndex).toHaveBeenCalledTimes(kbCount)
+    
+    // Verify each index name was handled correctly
+    for (const kbId of kbIds) {
+      expect(createMeiliIndex).toHaveBeenCalledWith(`kb_${kbId}`)
+      expect(deleteMeiliIndex).toHaveBeenCalledWith(`kb_${kbId}`)
+    }
+  })
 })
 
 
